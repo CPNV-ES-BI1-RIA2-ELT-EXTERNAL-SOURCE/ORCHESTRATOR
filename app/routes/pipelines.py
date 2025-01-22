@@ -1,13 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from app.services import orchestrator
+from app.services.orchestrator import Orchestrator
 
 router = APIRouter()
 
-orchestrator = orchestrator.Orchestrator("config.yaml")
-
 
 @router.post("/start/{pipeline_type}", response_model=dict)
-async def start_pipeline_type(pipeline_type: str):
+async def start_pipeline_type(pipeline_type: str, request: dict):
     """
     This endpoint starts a specified data pipeline. There are two pipeline types:
     1. "data_lake_pipeline": Data Generator -> Extract -> Load -> Data Lake
@@ -20,6 +18,12 @@ async def start_pipeline_type(pipeline_type: str):
     - A response indicating the status.
     """
     try:
+        if request.get("dataSource"):
+            orchestrator = Orchestrator(
+                "config.yaml", next_step_download_url=request["dataSource"]
+            )
+        else:
+            orchestrator = Orchestrator("config.yaml")
         await orchestrator.run_pipeline(pipeline_type)
         return {"status": "success"}
     except ValueError as ve:
