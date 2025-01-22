@@ -5,6 +5,8 @@ from unittest.mock import patch, AsyncMock
 from app.services.orchestrator import Orchestrator
 from app.helpers import JobHelper
 
+from tests.data import get_example_config
+
 scenarios("run_pipeline.feature")
 
 # Fixtures
@@ -20,30 +22,7 @@ def orchestrator():
 @pytest.fixture
 def mock_load_config():
     with patch("app.services.orchestrator.load_config") as mock:
-        mock.return_value = [
-            {
-                "data_pipeline": [
-                    {
-                        "step1": {
-                            "hostname": "localhost",
-                            "contactURL": "/geturl",
-                            "method": "GET",
-                        }
-                    }
-                ]
-            },
-            {
-                "data_pipeline": [
-                    {
-                        "step1": {
-                            "hostname": "localhost",
-                            "contactURL": "/startprocess",
-                            "method": "POST",
-                        }
-                    }
-                ]
-            },
-        ]
+        mock.return_value = get_example_config()
         yield mock
 
 
