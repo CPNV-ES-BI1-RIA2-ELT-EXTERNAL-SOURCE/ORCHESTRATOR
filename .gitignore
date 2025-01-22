@@ -127,3 +127,5 @@ docs/*.lock
 
 metadata.yaml
 .vscode/settings.json
+
+config.yaml
