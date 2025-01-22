@@ -33,7 +33,7 @@ class Orchestrator:
                 step_name, service = list(step.items())[0]
                 hostname = service["hostname"]
                 contactURL = service["contactURL"]
-                method = service["method"]
+                method = service["method"].upper()
 
                 try:
                     if method == "GET":
@@ -41,7 +41,7 @@ class Orchestrator:
                             client, hostname, contactURL, current_job_id
                         )
                     elif method == "POST":
-                        self._start_microservice_process(
+                        await self._start_microservice_process(
                             client, hostname, contactURL, current_job_id
                         )
                     else:
