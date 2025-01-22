@@ -8,13 +8,13 @@ from app.helpers import load_config, JobHelper
 
 class Orchestrator:
     def __init__(
-        self, config_file_path: str, metadata_file_path: str = "metadata.yaml", **kwargs
+        self, config_file_path: str, metadata_file_path: str = "metadata.yaml"
     ):
         self.job_helper = JobHelper(metadata_file_path)
 
         self._pipelines = load_config(config_file_path, "pipelines")
 
-        self._next_step_download_url = kwargs.get("next_step_download_url", None)
+        self._next_step_download_url = None
 
     async def run_pipeline(self, pipeline_type: dict) -> None:
         pipelines = self._pipelines
@@ -41,8 +41,12 @@ class Orchestrator:
                             client, hostname, contactURL, current_job_id
                         )
                     elif method == "POST":
+                        payload = {}
+
+                        if "payload" in service:
+                            payload = service["payload"]
                         await self._start_microservice_process(
-                            client, hostname, contactURL, current_job_id
+                            client, hostname, contactURL, current_job_id, payload
                         )
                     else:
                         raise ValueError(f"Unsupported HTTP method: {method}")
@@ -68,11 +72,16 @@ class Orchestrator:
         return response.json().get("url")
 
     async def _start_microservice_process(
-        self, client: httpx.AsyncClient, hostname: str, contactURL: str, job_id: int
+        self,
+        client: httpx.AsyncClient,
+        hostname: str,
+        contactURL: str,
+        job_id: int,
+        payload: dict = None,
     ) -> None:
         response = await client.post(
             f"http://{hostname}{contactURL}/{job_id}",
-            json={"dataSource": self._next_step_download_url},
+            json=payload,
         )
         if response.status_code != 200:
             raise HTTPException(

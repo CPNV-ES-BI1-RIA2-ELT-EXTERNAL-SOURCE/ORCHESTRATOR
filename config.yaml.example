@@ -4,6 +4,8 @@ pipelines:
                 hostname: "data-generator"
                 contactURL: "/all"
                 method: "GET"
+                payload:
+                    datasource: "myCustom datasource"
           - step2:
                 hostname: "extract"
                 contactURL: "/extract"
