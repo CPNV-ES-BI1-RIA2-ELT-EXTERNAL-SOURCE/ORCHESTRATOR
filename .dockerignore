@@ -1,2 +1,6 @@
-__pycache__/
-docs/
+__pycache__
+docs
+tests
+.git
+.vscode
+README.md
