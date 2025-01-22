@@ -1,0 +1,23 @@
+pipelines:
+    - pipeline1:
+          - step1:
+                hostname: "data-generator"
+                contactURL: "/all"
+                method: "GET"
+          - step2:
+                hostname: "extract"
+                contactURL: "/extract"
+                method: "POST"
+          - step3:
+                hostname: "load"
+                contactURL: "/load"
+                method: "POST"
+    - pipeline2:
+          - step1:
+                hostname: "transform"
+                contactURL: "/transform"
+                method: "POST"
+          - step2:
+                hostname: "extract"
+                contactURL: "/extract"
+                method: "POST"
