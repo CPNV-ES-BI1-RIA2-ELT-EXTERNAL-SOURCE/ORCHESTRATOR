@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 fastapi = {extras = ["standard"], version = "*"}
+httpx = "*"
 
 [requires]
 python_version = "3.12"
