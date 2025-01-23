@@ -7,12 +7,10 @@ router = APIRouter()
 @router.post("/start/{pipeline_type}", response_model=dict)
 async def start_pipeline_type(pipeline_type: str):
     """
-    This endpoint starts a specified data pipeline. There are two pipeline types:
-    1. "data_lake_pipeline": Data Generator -> Extract -> Load -> Data Lake
-    2. "database_pipeline": Transform -> Load -> Database
-
+    This endpoint starts a specified data pipeline.
+    
     Args:
-    - pipeline_type: The type of pipeline to start ("data_lake_pipeline" or "database_pipeline").
+    - pipeline_type: The type of pipeline to start.
 
     Returns:
     - A response indicating the status.
