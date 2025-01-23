@@ -14,7 +14,7 @@ class Orchestrator:
 
         self._pipelines = load_config(config_file_path, "pipelines")
 
-        self._next_step_download_url = None
+        self._next_step_download_url = self.job_helper.get_download_url() or ""
 
     async def run_pipeline(self, pipeline_type: dict) -> None:
         pipeline = self._get_pipeline(self._pipelines, pipeline_type)
@@ -50,6 +50,7 @@ class Orchestrator:
                     else:
                         raise ValueError(f"Unsupported HTTP method: {method}")
 
+                    self.job_helper.set_download_url(self._next_step_download_url)
                 except httpx.HTTPStatusError as e:
                     raise HTTPException(
                         status_code=e.response.status_code, detail=str(e)
