@@ -4,3 +4,4 @@ tests
 .git
 .vscode
 README.md
+docker-compose.yml

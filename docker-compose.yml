@@ -1,0 +1,10 @@
+services:
+  orchestrator:
+    container_name: orchestrator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./config.example.yaml:/orchestrator/config.yaml
