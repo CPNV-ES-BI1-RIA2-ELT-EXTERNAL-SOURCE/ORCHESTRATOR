@@ -2,13 +2,14 @@ pipelines:
     - name: "pipeline"
       steps:
           - name: "Step1"
-            hostname: "server1"
-            contactURL: "/job"
+            hostname: "Server1"
+            contactURL: "http://{hostname}/job/{job_id}"
             method: "post"
             payload:
-                dataSource: "https://path/of/the/datasource"
-                dataDestination: "https://this/can/be/a/template/{job_id}"
+                dataSource: "https://ExternalServer/download/{job_id}.yaml"
           - name: "Step2"
-            hostname: "server2"
-            contactURL: "/job"
-            method: "get"
+            hostname: "Server2:8000"
+            contactURL: "http://{hostname}/job/{job_id}"
+            method: "post"
+            payload:
+                dataSource: "https://ExternalServer/download/{job_id}.json"

@@ -60,7 +60,11 @@ class Orchestrator:
     async def _get_download_url(
         self, client: httpx.AsyncClient, hostname: str, contactURL: str, job_id: int
     ) -> str:
-        response = await client.get(f"http://{hostname}{contactURL}/{job_id}")
+        available_vars = {"job_id": job_id, "hostname": hostname}
+
+        url = self._replace_placeholders(contactURL, available_vars)
+
+        response = await client.get(url)
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code,
@@ -76,26 +80,18 @@ class Orchestrator:
         job_id: int,
         payload: dict,
     ) -> None:
-        def replace_placeholders(data: dict, vars: dict) -> dict:
-            if isinstance(data, dict):
-                return {
-                    key: replace_placeholders(value, vars)
-                    for key, value in data.items()
-                }
-            elif isinstance(data, str):
-                return data.format(**vars)
-            else:
-                return data
-
-        available_vars = {"job_id": job_id}
+        available_vars = {"job_id": job_id, "hostname": hostname}
 
         if payload:
-            payload = replace_placeholders(payload, available_vars)
+            payload = self._replace_placeholders(payload, available_vars)
+
+        url = self._replace_placeholders(contactURL, available_vars)
 
         response = await client.post(
-            f"http://{hostname}{contactURL}/{job_id}",
+            url,
             json=payload,
         )
+
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code,
@@ -107,3 +103,14 @@ class Orchestrator:
 
     def _get_pipeline(self, pipelines: dict, pipeline_type: str) -> list:
         return next((obj for obj in pipelines if obj["name"] == pipeline_type), None)
+
+    def _replace_placeholders(self, data: dict, vars: dict) -> dict:
+        if isinstance(data, dict):
+            return {
+                key: self._replace_placeholders(value, vars)
+                for key, value in data.items()
+            }
+        elif isinstance(data, str):
+            return data.format(**vars)
+        else:
+            return data
