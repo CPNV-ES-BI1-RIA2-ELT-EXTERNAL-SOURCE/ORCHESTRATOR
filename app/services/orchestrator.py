@@ -82,7 +82,11 @@ class Orchestrator:
         job_id: int,
         payload: dict,
     ) -> None:
-        available_vars = {"job_id": job_id, "hostname": hostname}
+        available_vars = {
+            "job_id": job_id,
+            "hostname": hostname,
+            "download_url": self._next_step_download_url,
+        }
 
         if payload:
             payload = self._replace_placeholders(payload, available_vars)
