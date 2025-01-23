@@ -42,8 +42,10 @@ class Orchestrator:
                         if "payload" in step:
                             payload = step["payload"]
 
-                        await self._start_microservice_process(
-                            client, hostname, contactURL, current_job_id, payload
+                        self._next_step_download_url = (
+                            await self._start_microservice_process(
+                                client, hostname, contactURL, current_job_id, payload
+                            )
                         )
                     else:
                         raise ValueError(f"Unsupported HTTP method: {method}")
@@ -97,6 +99,8 @@ class Orchestrator:
                 status_code=response.status_code,
                 detail="Failed to start microservice process",
             )
+
+        return response.json().get("dataSource")
 
     def _get_job_id(self) -> int:
         return self.job_helper.get_job_id()
