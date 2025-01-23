@@ -15,7 +15,7 @@ scenarios("run_pipeline.feature")
 @pytest.fixture
 def orchestrator():
     return Orchestrator(
-        config_file_path="config.yaml", metadata_file_path="metadata.yaml"
+        config_file_path="config.example.yaml", metadata_file_path="metadata.yaml"
     )
 
 
