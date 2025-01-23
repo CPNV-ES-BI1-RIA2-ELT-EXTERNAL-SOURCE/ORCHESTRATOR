@@ -45,6 +45,7 @@ class Orchestrator:
 
                         if "payload" in service:
                             payload = service["payload"]
+
                         await self._start_microservice_process(
                             client, hostname, contactURL, current_job_id, payload
                         )
@@ -77,8 +78,24 @@ class Orchestrator:
         hostname: str,
         contactURL: str,
         job_id: int,
-        payload: dict = None,
+        payload: dict,
     ) -> None:
+        def replace_placeholders(data: dict, vars: dict) -> dict:
+            if isinstance(data, dict):
+                return {
+                    key: replace_placeholders(value, vars)
+                    for key, value in data.items()
+                }
+            elif isinstance(data, str):
+                return data.format(**vars)
+            else:
+                return data
+
+        available_vars = {"job_id": job_id}
+
+        if payload:
+            payload = replace_placeholders(payload, available_vars)
+
         response = await client.post(
             f"http://{hostname}{contactURL}/{job_id}",
             json=payload,
