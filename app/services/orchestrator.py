@@ -17,11 +17,7 @@ class Orchestrator:
         self._next_step_download_url = None
 
     async def run_pipeline(self, pipeline_type: dict) -> None:
-        pipelines = self._pipelines
-
-        pipeline = next(
-            (p[pipeline_type] for p in pipelines if pipeline_type in p), None
-        )
+        pipeline = self._get_pipeline(self._pipelines, pipeline_type)
 
         if pipeline is None:
             raise UnknownPipelineType(pipeline_type)
@@ -29,11 +25,11 @@ class Orchestrator:
         current_job_id = self._get_job_id()
 
         async with httpx.AsyncClient() as client:
-            for step in pipeline:
-                step_name, service = list(step.items())[0]
-                hostname = service["hostname"]
-                contactURL = service["contactURL"]
-                method = service["method"].upper()
+            for step in pipeline["steps"]:
+                step_name = step["name"]
+                hostname = step["hostname"]
+                contactURL = step["contactURL"]
+                method = step["method"].upper()
 
                 try:
                     if method == "GET":
@@ -43,8 +39,8 @@ class Orchestrator:
                     elif method == "POST":
                         payload = {}
 
-                        if "payload" in service:
-                            payload = service["payload"]
+                        if "payload" in step:
+                            payload = step["payload"]
 
                         await self._start_microservice_process(
                             client, hostname, contactURL, current_job_id, payload
@@ -108,3 +104,6 @@ class Orchestrator:
 
     def _get_job_id(self) -> int:
         return self.job_helper.get_job_id()
+
+    def _get_pipeline(self, pipelines: dict, pipeline_type: str) -> list:
+        return next((obj for obj in pipelines if obj["name"] == pipeline_type), None)

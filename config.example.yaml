@@ -1,25 +1,14 @@
 pipelines:
-    - pipeline1:
-          - step1:
-                hostname: "data-generator"
-                contactURL: "/all"
-                method: "GET"
-                payload:
-                    datasource: "myCustom datasource"
-          - step2:
-                hostname: "extract"
-                contactURL: "/extract"
-                method: "POST"
-          - step3:
-                hostname: "load"
-                contactURL: "/load"
-                method: "POST"
-    - pipeline2:
-          - step1:
-                hostname: "transform"
-                contactURL: "/transform"
-                method: "POST"
-          - step2:
-                hostname: "extract"
-                contactURL: "/extract"
-                method: "POST"
+    - name: "pipeline"
+      steps:
+          - name: "Step1"
+            hostname: "server1"
+            contactURL: "/job"
+            method: "post"
+            payload:
+                dataSource: "https://path/of/the/datasource"
+                dataDestination: "https://this/can/be/a/template/{job_id}"
+          - name: "Step2"
+            hostname: "server2"
+            contactURL: "/job"
+            method: "get"
